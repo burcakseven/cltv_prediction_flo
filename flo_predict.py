@@ -86,6 +86,8 @@ seg_map = {
     r'5[4-5]': 'champions'
 }
 
+data['segment'] = data['RF'].replace(seg_map, regex=True)
+
 # TASK 5: Action Time!
 # 1. Examine the averages of recency, frequency, and monetary values for each segment.
 # 2. Find customers matching the profiles for 2 cases using RFM analysis and save their customer IDs to a CSV file.
