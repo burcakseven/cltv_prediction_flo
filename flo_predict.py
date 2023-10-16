@@ -79,10 +79,10 @@ seg_map = {
     r'[1-2]5': 'cant_lose',
     r'3[1-2]': 'about_to_sleep',
     r'33': 'need_attention',
-    r'[3-4][4-5]': 'loyal_costumer',
+    r'[3-4][4-5]': 'loyal customers',
     r'41': 'promising',
     r'51': 'new_costumers',
-    r'[4-5][2-3]': 'potential_loyalist',
+    r'[4-5][2-3]': 'potential loyalist',
     r'5[4-5]': 'champions'
 }
 
@@ -90,10 +90,33 @@ data['segment'] = data['RF'].replace(seg_map, regex=True)
 
 # TASK 5: Action Time!
 # 1. Examine the averages of recency, frequency, and monetary values for each segment.
+print(data[['segment', 'recency', 'frequency', 'monetary']].groupby('segment').mean())  # its now clear enough but true
+
+segment_averages = data.groupby('segment').agg({  # clear way bc using .agg is more undestrandable
+    'recency': 'mean',
+    'frequency': 'mean',
+    'monetary': 'mean'
+}).reset_index()
+
+print(segment_averages)
+
 # 2. Find customers matching the profiles for 2 cases using RFM analysis and save their customer IDs to a CSV file.
+hibernate_costumers = pd.DataFrame
+champion_costumers = pd.DataFrame
+hibernate_costumers = data[data['segment'] == 'hibernating']['master_id']
+champion_costumers = data[data['segment'] == 'champions']
+hibernate_costumers.to_csv("hibernate_costumers.csv")
+champion_costumers['master_id'].to_csv("champion_costumers.csv")
+
 # a. FLO is introducing a new women's shoe brand. The brand's product prices are higher than the general customer preferences. Therefore, FLO wants to communicate
 # and establish a connection with loyal customers (champions, loyal customers) who have an average spending above 250 TL and shop in the women's category. Save the customer IDs
 # to a CSV file named new_brand_target_customer_ids.csv.
+#(customer_value_total_ever_online + customer_value_total_ever_offline )/ (order_num_total_ever_online + order_num_total_ever_offline)
+new_brand_target_customer_ids = pd.DataFrame
+data['average_spend'] = data['monetary']/( data['order_num_total_ever_online'] + data['order_num_total_ever_offline'])
+new_brand_target_customer_ids = data[(data['segment'].isin(['champions', 'loyal customers'])
+                                      & (data['monetary']/ data['average_spend'] > 250))]
+print(new_brand_target_customer_ids['segment'])
 # b. A discount of nearly 40% is planned for men's and children's products. FLO wants to target customers interested in these categories who were good customers in the past
 # but haven't shopped for a long time, new customers, and those who are currently inactive. Save the customer IDs to a CSV file named discount_target_customer_ids.csv.
 
